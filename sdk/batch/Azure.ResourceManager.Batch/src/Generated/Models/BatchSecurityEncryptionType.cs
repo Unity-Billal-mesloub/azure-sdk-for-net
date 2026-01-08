@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Batch;
 
 namespace Azure.ResourceManager.Batch.Models
 {
@@ -14,41 +15,62 @@ namespace Azure.ResourceManager.Batch.Models
     public readonly partial struct BatchSecurityEncryptionType : IEquatable<BatchSecurityEncryptionType>
     {
         private readonly string _value;
+        /// <summary> EncryptionType of the managed disk is set to NonPersistedTPM for not persisting firmware state in the VMGuestState blob. </summary>
+        private const string NonPersistedTPMValue = "NonPersistedTPM";
+        /// <summary> EncryptionType of the managed disk is set to VMGuestStateOnly for encryption of just the VMGuestState blob. </summary>
+        private const string VMGuestStateOnlyValue = "VMGuestStateOnly";
+        /// <summary> EncryptionType of the managed disk is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob. It is not supported in data disks. </summary>
+        private const string DiskWithVMGuestStateValue = "DiskWithVMGuestState";
 
         /// <summary> Initializes a new instance of <see cref="BatchSecurityEncryptionType"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public BatchSecurityEncryptionType(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string DiskWithVmGuestStateValue = "DiskWithVMGuestState";
-        private const string VmGuestStateOnlyValue = "VMGuestStateOnly";
-        private const string NonPersistedTPMValue = "NonPersistedTPM";
-
-        /// <summary> EncryptionType of the managed disk is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob. It is not supported in data disks. </summary>
-        public static BatchSecurityEncryptionType DiskWithVmGuestState { get; } = new BatchSecurityEncryptionType(DiskWithVmGuestStateValue);
-        /// <summary> EncryptionType of the managed disk is set to VMGuestStateOnly for encryption of just the VMGuestState blob. </summary>
-        public static BatchSecurityEncryptionType VmGuestStateOnly { get; } = new BatchSecurityEncryptionType(VmGuestStateOnlyValue);
         /// <summary> EncryptionType of the managed disk is set to NonPersistedTPM for not persisting firmware state in the VMGuestState blob. </summary>
         public static BatchSecurityEncryptionType NonPersistedTPM { get; } = new BatchSecurityEncryptionType(NonPersistedTPMValue);
+
+        /// <summary> EncryptionType of the managed disk is set to VMGuestStateOnly for encryption of just the VMGuestState blob. </summary>
+        public static BatchSecurityEncryptionType VMGuestStateOnly { get; } = new BatchSecurityEncryptionType(VMGuestStateOnlyValue);
+
+        /// <summary> EncryptionType of the managed disk is set to DiskWithVMGuestState for encryption of the managed disk along with VMGuestState blob. It is not supported in data disks. </summary>
+        public static BatchSecurityEncryptionType DiskWithVMGuestState { get; } = new BatchSecurityEncryptionType(DiskWithVMGuestStateValue);
+
         /// <summary> Determines if two <see cref="BatchSecurityEncryptionType"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(BatchSecurityEncryptionType left, BatchSecurityEncryptionType right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="BatchSecurityEncryptionType"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(BatchSecurityEncryptionType left, BatchSecurityEncryptionType right) => !left.Equals(right);
-        /// <summary> Converts a <see cref="string"/> to a <see cref="BatchSecurityEncryptionType"/>. </summary>
+
+        /// <summary> Converts a string to a <see cref="BatchSecurityEncryptionType"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator BatchSecurityEncryptionType(string value) => new BatchSecurityEncryptionType(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="BatchSecurityEncryptionType"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator BatchSecurityEncryptionType?(string value) => value == null ? null : new BatchSecurityEncryptionType(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is BatchSecurityEncryptionType other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(BatchSecurityEncryptionType other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }
